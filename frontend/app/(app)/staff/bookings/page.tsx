@@ -5,7 +5,7 @@ import { collection, onSnapshot, orderBy, query, where } from "firebase/firestor
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { Booking } from "@/types";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function StaffBookingsPage() {
@@ -27,10 +27,13 @@ export default function StaffBookingsPage() {
     return unsub;
   }, [user]);
 
+  if (loadingBookings) {
+    return <LoadingState label="Loading assigned bookings..." />;
+  }
+
   return (
     <div>
       <Title heading="Assigned bookings" />
-      {loadingBookings && <InlineLoading label="Loading assigned bookings..." />}
       <div className="space-y-4">
         {bookings.map((b) => (
           <div key={b.id} className="glass-panel rounded-2xl p-5">
@@ -39,7 +42,7 @@ export default function StaffBookingsPage() {
             <p className="text-sm capitalize mt-1 text-violet-300">{b.status}</p>
           </div>
         ))}
-        {!loadingBookings && !bookings.length && <p className="text-gray-400 text-sm">No assigned bookings.</p>}
+        {!bookings.length && <p className="text-gray-400 text-sm">No assigned bookings.</p>}
       </div>
     </div>
   );

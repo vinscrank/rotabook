@@ -7,7 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { AvailabilitySlot } from "@/types";
 import { PrimaryButton } from "@/components/Buttons";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function BookPage() {
@@ -51,6 +51,10 @@ export default function BookPage() {
     }
   };
 
+  if (loadingSlots) {
+    return <LoadingState label="Loading available slots..." />;
+  }
+
   return (
     <div>
       <Title heading="Available slots" description="Book a slot updated in realtime" />
@@ -59,7 +63,6 @@ export default function BookPage() {
           {message}
         </p>
       )}
-      {loadingSlots && <InlineLoading label="Loading available slots..." />}
       <div className="grid gap-4 md:grid-cols-2">
         {slots.map((slot) => (
           <div key={slot.id} className="glass-panel rounded-2xl p-5">
@@ -78,7 +81,7 @@ export default function BookPage() {
             </PrimaryButton>
           </div>
         ))}
-        {!loadingSlots && !slots.length && (
+        {!slots.length && (
           <p className="text-gray-400 text-sm">No available slots right now.</p>
         )}
       </div>

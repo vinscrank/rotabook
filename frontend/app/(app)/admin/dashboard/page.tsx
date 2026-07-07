@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function AdminDashboardPage() {
@@ -41,10 +41,13 @@ export default function AdminDashboardPage() {
     { label: "Shifts", value: stats.shifts },
   ];
 
+  if (loadingStats) {
+    return <LoadingState label="Loading dashboard data..." />;
+  }
+
   return (
     <div>
       <Title heading="Admin dashboard" description="Overview of your RotaBook workspace" />
-      {loadingStats && <InlineLoading label="Loading dashboard data..." />}
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
           <div key={c.label} className="glass-panel rounded-2xl p-6">

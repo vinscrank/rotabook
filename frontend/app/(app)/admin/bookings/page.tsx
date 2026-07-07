@@ -7,7 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 type BookingStatus = Booking["status"];
@@ -59,13 +59,16 @@ export default function AdminBookingsPage() {
 
   const isRowBusy = (bookingId: string) => loadingAction?.bookingId === bookingId;
 
+  if (loadingBookings) {
+    return <LoadingState label="Loading bookings..." />;
+  }
+
   return (
     <div>
       <Title heading="All bookings" description="Manage booking statuses" />
       {message && (
         <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>{message}</p>
       )}
-      {loadingBookings && <InlineLoading label="Loading bookings..." />}
       <div className="space-y-4 max-w-3xl mx-auto">
         {bookings.map((b) => (
           <div key={b.id} className="glass-panel rounded-2xl p-5">

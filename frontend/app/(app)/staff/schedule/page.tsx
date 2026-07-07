@@ -5,7 +5,7 @@ import { collection, onSnapshot, orderBy, query, where } from "firebase/firestor
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { StaffShift } from "@/types";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function StaffSchedulePage() {
@@ -27,10 +27,13 @@ export default function StaffSchedulePage() {
     return unsub;
   }, [user]);
 
+  if (loadingShifts) {
+    return <LoadingState label="Loading your schedule..." />;
+  }
+
   return (
     <div>
       <Title heading="My schedule" description="Your upcoming shifts" />
-      {loadingShifts && <InlineLoading label="Loading your schedule..." />}
       <div className="space-y-4">
         {shifts.map((shift) => (
           <div key={shift.id} className="glass-panel rounded-2xl p-5">
@@ -38,7 +41,7 @@ export default function StaffSchedulePage() {
             <p className="text-sm mt-2">{shift.date} · {shift.startTime} - {shift.endTime}</p>
           </div>
         ))}
-        {!loadingShifts && !shifts.length && <p className="text-gray-400 text-sm">No shifts assigned.</p>}
+        {!shifts.length && <p className="text-gray-400 text-sm">No shifts assigned.</p>}
       </div>
     </div>
   );

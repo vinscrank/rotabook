@@ -11,7 +11,7 @@ import { AvailabilitySlot } from "@/types";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
 import { formInputClassName } from "@/lib/formStyles";
@@ -75,7 +75,7 @@ export default function EditSlotPage() {
   };
 
   if (loadingSlot) {
-    return <InlineLoading label="Loading slot..." />;
+    return <LoadingState label="Loading slot..." />;
   }
 
   return (

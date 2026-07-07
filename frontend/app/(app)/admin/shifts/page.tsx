@@ -135,7 +135,10 @@ export default function AdminShiftsPage() {
       </form>
 
       <div className="space-y-4 max-w-3xl mx-auto">
-        {loadingShifts && <InlineLoading label="Loading shifts..." />}
+        {loadingShifts ? (
+          <InlineLoading label="Loading shifts..." variant="page" />
+        ) : (
+          <>
         {shifts.map((shift) => (
           <div key={shift.id} className="glass-panel rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -145,7 +148,9 @@ export default function AdminShiftsPage() {
             <p className="text-sm text-violet-300">{shift.date} · {shift.startTime} - {shift.endTime}</p>
           </div>
         ))}
-        {!loadingShifts && !shifts.length && <p className="text-gray-400 text-sm">No shifts created yet.</p>}
+        {!shifts.length && <p className="text-gray-400 text-sm">No shifts created yet.</p>}
+          </>
+        )}
       </div>
     </div>
   );

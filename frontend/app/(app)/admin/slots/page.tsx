@@ -6,7 +6,7 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { AvailabilitySlot } from "@/types";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 const statusStyles: Record<AvailabilitySlot["status"], string> = {
@@ -28,6 +28,10 @@ export default function AdminSlotsPage() {
     return unsub;
   }, []);
 
+  if (loadingSlots) {
+    return <LoadingState label="Loading slots..." />;
+  }
+
   return (
     <div>
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
@@ -36,7 +40,6 @@ export default function AdminSlotsPage() {
           <PrimaryButton className="w-full sm:w-auto justify-center">New slot</PrimaryButton>
         </Link>
       </div>
-      {loadingSlots && <InlineLoading label="Loading slots..." />}
       <div className="space-y-4 max-w-3xl mx-auto">
         {slots.map((slot) => (
           <div key={slot.id} className="glass-panel rounded-2xl p-5">
@@ -60,7 +63,7 @@ export default function AdminSlotsPage() {
             </div>
           </div>
         ))}
-        {!loadingSlots && !slots.length && <p className="text-gray-400 text-sm">No slots created yet.</p>}
+        {!slots.length && <p className="text-gray-400 text-sm">No slots created yet.</p>}
       </div>
     </div>
   );

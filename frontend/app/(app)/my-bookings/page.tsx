@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
-import InlineLoading from "@/components/InlineLoading";
+import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function MyBookingsPage() {
@@ -46,11 +46,14 @@ export default function MyBookingsPage() {
     }
   };
 
+  if (loadingBookings) {
+    return <LoadingState label="Loading your bookings..." />;
+  }
+
   return (
     <div>
       <Title heading="My bookings" description="Your reservations update in realtime" />
       {message && <p className="text-sm text-violet-300 mb-4">{message}</p>}
-      {loadingBookings && <InlineLoading label="Loading your bookings..." />}
       <div className="space-y-4">
         {bookings.map((b) => (
           <div key={b.id} className="glass-panel rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
