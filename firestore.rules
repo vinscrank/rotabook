@@ -1,38 +1,53 @@
 rules_version = '2';
 service cloud.firestore {
-  
   match /databases/{database}/documents {
 
     function isSignedIn() {
       return request.auth != null;
     }
 
+    function userDoc() {
+      return get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+    }
+
     function isAdmin() {
-      return isSignedIn()
-        && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role == 'admin';
+      return isSignedIn() && userDoc().role == 'admin';
+    }
+
+    function isStaff() {
+      return isSignedIn() && userDoc().role == 'staff';
     }
 
     match /users/{userId} {
       allow read: if isSignedIn() && (request.auth.uid == userId || isAdmin());
-      allow create: if isSignedIn() && request.auth.uid == userId;
-      allow update: if isSignedIn() && (request.auth.uid == userId || isAdmin());
+      allow create: if false;
+      allow update: if isAdmin() || (
+        isSignedIn()
+        && request.auth.uid == userId
+        && request.resource.data.role == resource.data.role
+      );
     }
 
     match /availability_slots/{slotId} {
       allow read: if isSignedIn();
-      allow write: if isAdmin();
+      allow write: if false;
     }
 
     match /bookings/{bookingId} {
       allow read: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || isAdmin()
+        resource.data.userId == request.auth.uid
+        || resource.data.staffId == request.auth.uid
+        || isAdmin()
       );
       allow write: if false;
     }
 
     match /staff_shifts/{shiftId} {
-      allow read: if isSignedIn();
-      allow write: if isAdmin();
+      allow read: if isSignedIn() && (
+        isAdmin()
+        || (isStaff() && resource.data.staffId == request.auth.uid)
+      );
+      allow write: if false;
     }
   }
 }
