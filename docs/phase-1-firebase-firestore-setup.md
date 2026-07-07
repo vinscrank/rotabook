@@ -2,7 +2,9 @@
 
 ## Obiettivo
 
-Creare il progetto Firebase `rotabook-dev`, abilitare Firestore in modalita produzione, definire le 4 collezioni con dati di test, inizializzare la cartella `functions/` con TypeScript e deployare le prime Security Rules. Al termine avrai un backend Firebase funzionante su cui costruire Auth e Cloud Functions nelle fasi successive.
+Creare il progetto Firebase dedicato allo sviluppo, abilitare Firestore in modalita produzione, definire le 4 collezioni con dati di test, inizializzare la cartella `functions/` con TypeScript e deployare le prime Security Rules. Al termine avrai un backend Firebase funzionante su cui costruire Auth e Cloud Functions nelle fasi successive.
+
+**Progetto attuale:** display name `rotabook-dev`, **Project ID** `rotabook-99ebd` (l'ID lo assegna Firebase alla creazione e va usato negli URL).
 
 **Tu esegui tutti i comandi.** Il frontend Next.js non si tocca ancora.
 
@@ -14,12 +16,14 @@ Creare il progetto Firebase `rotabook-dev`, abilitare Firestore in modalita prod
 
 | Opzione | Pro | Contro |
 |---------|-----|--------|
-| **Firestore produzione** (`rotabook-dev`) | Stesso comportamento del deploy finale; impari indici, regole, console; dati persistenti | Serve connessione internet; attenzione a non committare credenziali |
+| **Firestore produzione** (progetto dev dedicato) | Stesso comportamento del deploy finale; impari indici, regole, console; dati persistenti | Serve connessione internet; attenzione a non committare credenziali |
 | **Emulator locale** | Zero rischio cloud; test offline | Setup extra; dati non persistenti; differenze sottili con produzione |
 
-**Scelta per RotaBook:** Firestore **produzione** su progetto dedicato `rotabook-dev`. L'Emulator lo userai in Fase 4 per testare Functions senza deploy continuo.
+**Scelta per RotaBook:** Firestore **produzione** su progetto dedicato dev. L'Emulator lo userai in Fase 4 per testare Functions senza deploy continuo.
 
-**Spirito critico:** "produzione" qui significa "database cloud reale", non "app live con utenti". Il progetto `rotabook-dev` e il tuo sandbox. Quando il portfolio e pronto, creerai `rotabook-prod` (Fase 7) con regole piu restrittive.
+**Spirito critico:** "produzione" qui significa "database cloud reale", non "app live con utenti". Il progetto dev (es. `rotabook-99ebd`) e il tuo sandbox. Quando il portfolio e pronto, creerai un progetto prod separato (Fase 7) con regole piu restrittive.
+
+**Attenzione — Nome vs Project ID:** in Console puoi chiamare il progetto `rotabook-dev`, ma l'**Project ID** (es. `rotabook-99ebd`) e quello negli URL e in `.firebaserc`. Non confonderli.
 
 ---
 
@@ -112,9 +116,10 @@ firebase login:list
 
 1. Vai su https://console.firebase.google.com
 2. Clicca **Add project** (Aggiungi progetto)
-3. Nome: `rotabook-dev`
+3. Nome display: `rotabook-dev` (o come preferisci)
 4. Disabilita Google Analytics (non serve per il MVP)
 5. Clicca **Create project**
+6. Annota il **Project ID** generato (es. `rotabook-99ebd`) — lo trovi anche in Project settings
 
 ### Abilita Authentication (preparazione Fase 2)
 
@@ -161,7 +166,7 @@ Rispondi cosi (usa le frecce e spazio per selezionare):
 | Domanda | Risposta |
 |---------|----------|
 | Which Firebase features? | Spazio su **Firestore**, **Functions** (Hosting lo aggiungi in Fase 7) |
-| Use an existing project | **Yes** → seleziona `rotabook-dev` |
+| Use an existing project | **Yes** → seleziona il tuo progetto (es. `rotabook-99ebd`) |
 | Firestore rules file | `firestore.rules` (default) |
 | Firestore indexes file | `firestore.indexes.json` (default) |
 | Functions language | **TypeScript** |
@@ -179,12 +184,12 @@ Apri `.firebaserc` e verifica:
 ```json
 {
   "projects": {
-    "default": "rotabook-dev"
+    "default": "rotabook-99ebd"
   }
 }
 ```
 
-Sostituisci `rotabook-dev` con l'ID reale del tuo progetto (lo vedi in Firebase Console → Project settings → Project ID).
+Sostituisci `rotabook-99ebd` con il **Project ID** reale (Firebase Console → Project settings → Project ID). Il display name puo essere diverso.
 
 ---
 
@@ -327,13 +332,15 @@ Gli indici possono impiegare qualche minuto a costruirsi. Controlla in Console �
 
 ## Passo 10 — Scaffold Cloud Functions
 
+**Teoria — Regione Functions:** se non specifichi `region`, Firebase deploya in `us-central1` (USA) anche se Firestore e in `europe-west1`. Per RotaBook allineiamo tutto a **Belgio** (`europe-west1`) per ridurre latenza.
+
 Apri `functions/src/index.ts` e sostituisci tutto con:
 
 ```typescript
 import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 
-export const health = onRequest((req, res) => {
+export const health = onRequest({ region: "europe-west1" }, (req, res) => {
   logger.info("health check");
   res.json({ status: "ok", service: "rotabook-functions" });
 });
@@ -375,16 +382,18 @@ firebase deploy --only functions
 Al termine il terminale mostra l'URL della function, tipo:
 
 ```
-https://europe-west1-rotabook-dev.cloudfunctions.net/health
+https://europe-west1-rotabook-99ebd.cloudfunctions.net/health
 ```
 
-Testa nel browser o con curl:
+Testa nel browser o con curl (usa il **tuo** Project ID):
 
 ```bash
-curl https://europe-west1-TUO-PROJECT-ID.cloudfunctions.net/health
+curl https://europe-west1-rotabook-99ebd.cloudfunctions.net/health
 ```
 
 **Risultato atteso:** `{"status":"ok","service":"rotabook-functions"}`
+
+**Errore comune:** URL con display name (`rotabook-dev`) invece del Project ID (`rotabook-99ebd`) → 404. Oppure regione sbagliata (`us-central1` vs `europe-west1`) se non hai messo `region` nel codice.
 
 ---
 
@@ -472,7 +481,7 @@ Crea `functions/scripts/verify-firestore.ts`:
 ```typescript
 import * as admin from "firebase-admin";
 
-admin.initializeApp({ projectId: "rotabook-dev" });
+admin.initializeApp({ projectId: "rotabook-99ebd" });
 
 async function main() {
   const slots = await admin.firestore().collection("availability_slots").get();
@@ -546,14 +555,14 @@ EOF
 
 Segna completata la fase solo se tutti questi punti sono veri:
 
-- [ ] Progetto Firebase `rotabook-dev` creato
+- [ ] Progetto Firebase dev creato (annota il **Project ID**, es. `rotabook-99ebd`)
 - [ ] Authentication (Email/Password) abilitata
 - [ ] Firestore attivo in `europe-west1`
 - [ ] Piano Blaze attivo (per Functions future)
 - [ ] `firebase init` completato (Firestore + Functions TypeScript)
 - [ ] `firebase deploy --only firestore:rules` ok
 - [ ] `firebase deploy --only firestore:indexes` ok
-- [ ] `firebase deploy --only functions` ok e `curl` su `/health` risponde `{"status":"ok",...}`
+- [ ] `firebase deploy --only functions` ok e `curl` su `https://europe-west1-rotabook-99ebd.cloudfunctions.net/health` risponde `{"status":"ok",...}`
 - [ ] In Console: 1 documento in `users`, 2 in `availability_slots`, 1 in `staff_shifts`, 0 in `bookings`
 - [ ] `.gitignore` esclude segreti e `node_modules`
 
@@ -574,6 +583,8 @@ Passeremo alla **Fase 2**: Auth trigger per creare profilo utente in Firestore d
 | Deploy rules ok ma lettura fallisce | Nessun utente autenticato | Normale: le rules richiedono auth. In Fase 2 risolvi con login |
 | `Index not found` su query | Indice non ancora pronto | Console → Firestore → Indexes, attendi stato "Enabled" |
 | `functions/lib not found` | Build non eseguita | `cd functions && npm run build` |
+| `404` su URL `/health` | Project ID o regione sbagliati | Usa Project ID da `.firebaserc` + `europe-west1` |
+| Deploy blocca per `health(us-central1)` | Hai cambiato regione nel codice | `firebase functions:delete health --region us-central1 --force` poi rideploy |
 
 ---
 
@@ -596,7 +607,7 @@ cd functions && npm run build && cd ..
 firebase deploy --only functions
 
 # Test health
-curl https://europe-west1-TUO-PROJECT-ID.cloudfunctions.net/health
+curl https://europe-west1-rotabook-99ebd.cloudfunctions.net/health
 ```
 
-Sostituisci `TUO-PROJECT-ID` con l'ID reale del progetto Firebase.
+Sostituisci `rotabook-99ebd` con il Project ID del tuo `.firebaserc`.

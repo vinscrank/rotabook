@@ -145,8 +145,8 @@ onSnapshot su bookings/slots   ← UI si aggiorna da sola
 3. **Differenza tra Firestore listener e polling?**
    Il listener (`onSnapshot`) riceve push dal server quando i dati cambiano. Il polling chiede "ci sono novita?" ogni N secondi: piu lento e costoso.
 
-4. **Perche usare un progetto Firebase `rotabook-dev` separato?**
-   Per non sporcare dati di produzione, poter resettare, e sperimentare regole senza rischi.
+4. **Perche usare un progetto Firebase dev separato dal prod?**
+   Per non sporcare dati di produzione, poter resettare, e sperimentare regole senza rischi. Il display name puo essere `rotabook-dev`, ma negli URL conta il **Project ID** (es. `rotabook-99ebd`).
 
 ---
 

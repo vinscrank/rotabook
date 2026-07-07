@@ -22,7 +22,7 @@ Il **backend e il cuore**: il frontend e solo un client che chiama Functions e l
 | Rischio | Puoi sporcare dati reali se non separi ambienti | Zero rischio su dati cloud |
 | CV | "Ho lavorato con Firestore in produzione" | "Ho usato emulatori in locale" |
 
-**Raccomandazione:** usa un **progetto Firebase dedicato solo allo sviluppo** (`rotabook-dev`), con Firestore in produzione mode fin dalla Fase 1. Non usare il progetto che userai per clienti reali. L'Emulator lo userai solo in Fase 4+ per testare Functions senza deployare ogni volta.
+**Raccomandazione:** usa un **progetto Firebase dedicato solo allo sviluppo** (display name es. `rotabook-dev`, Project ID es. `rotabook-99ebd`), con Firestore in production mode fin dalla Fase 1.
 
 **Spirito critico:** l'Emulator e utile per CI e test automatici, ma se il tuo obiettivo e imparare Firestore "davvero", partire dal cloud ti costringe a capire subito indici, regole, limiti di query e costi. Il free tier di Firestore copre ampiamente un MVP portfolio (50K letture/giorno, 20K scritture/giorno).
 
