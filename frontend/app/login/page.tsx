@@ -13,8 +13,8 @@ import SoftBackdrop from "@/components/SoftBackdrop";
 export default function LoginPage() {
   const { signIn, user, profile, loading: authLoading, profileLoading, profileError } = useAuth();
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin@admin.com");
+  const [password, setPassword] = useState("admindemo");
   const [error, setError] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
