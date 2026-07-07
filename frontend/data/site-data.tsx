@@ -48,14 +48,14 @@ export const sectorLabels = [
 export const previewCards = [
   {
     label: "Slots",
-    image: "https://images.unsplash.com/photo-1611224923853-80b023f02dca?q=80&w=400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1484480974693-6ca0a78fb36b?auto=format&fit=crop&w=400&q=80",
   },
   {
     label: "Bookings",
-    image: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?q=80&w=400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1506784365847-bbad939e9335?auto=format&fit=crop&w=400&q=80",
   },
   {
     label: "Shifts",
-    image: "https://images.unsplash.com/photo-1521737711862-ece3fd0f790b?q=80&w=400&auto=format&fit=crop",
+    image: "https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&w=400&q=80",
   },
 ];
