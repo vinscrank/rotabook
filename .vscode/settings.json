@@ -1,0 +1,7 @@
+{
+  "files.associations": {
+    "firestore.rules": "firestorerules",
+    "storage.rules": "firestorerules",
+    "*.rules": "firestorerules"
+  }
+}
