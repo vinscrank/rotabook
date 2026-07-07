@@ -1,11 +1,10 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { LogOutIcon, MenuIcon, XIcon } from "lucide-react";
 import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
-import { homeForRole } from "@/lib/roles";
 import { PrimaryButton, GhostButton } from "./Buttons";
 import { OverlayLoading } from "@/components/LoadingState";
 import Logo from "./Logo";
@@ -30,7 +29,6 @@ const userLinks = [
 export default function AppNavbar() {
   const { profile, user, logout } = useAuth();
   const pathname = usePathname();
-  const router = useRouter();
   const [open, setOpen] = useState(false);
   const [loggingOut, setLoggingOut] = useState(false);
 
@@ -51,17 +49,20 @@ export default function AppNavbar() {
 
   const handleLogout = async () => {
     setLoggingOut(true);
-    await logout();
-    router.replace("/login");
+    try {
+      await logout();
+    } catch {
+      setLoggingOut(false);
+      return;
+    }
+    window.location.assign("/");
   };
 
   return (
     <nav className="fixed top-5 left-0 right-0 z-50 px-4">
       {loggingOut && <OverlayLoading label="Signing out..." />}
       <div className="max-w-6xl mx-auto flex items-center justify-between bg-black/50 backdrop-blur-md border border-white/10 rounded-2xl p-3">
-        <Link href={homeForRole(profile.role)}>
-          <Logo />
-        </Link>
+        <Logo />
 
         <div className="hidden md:flex items-center gap-6 text-sm text-gray-300">
           {links.map((link) => (

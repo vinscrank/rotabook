@@ -20,7 +20,7 @@ export default function AuthGuard({
   useEffect(() => {
     if (loading || profileLoading) return;
     if (!user) {
-      router.replace("/login");
+      router.replace("/");
       return;
     }
     if (!profile) return;
