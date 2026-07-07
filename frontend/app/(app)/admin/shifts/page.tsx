@@ -9,6 +9,7 @@ import { PrimaryButton } from "@/components/Buttons";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import InlineLoading from "@/components/InlineLoading";
 import { OverlayLoading } from "@/components/LoadingState";
 import TimePickerField from "@/components/TimePickerField";
@@ -132,7 +133,7 @@ export default function AdminShiftsPage() {
           </FormField>
         </div>
 
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <FeedbackMessage message={error} variant="error" />}
         <PrimaryButton type="submit" disabled={loading} className="w-full justify-center py-3">
           {loading ? "Creating..." : "Create shift"}
         </PrimaryButton>

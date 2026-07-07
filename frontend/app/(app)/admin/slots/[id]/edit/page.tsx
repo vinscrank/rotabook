@@ -11,6 +11,7 @@ import { AvailabilitySlot } from "@/types";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
@@ -147,7 +148,7 @@ export default function EditSlotPage() {
         <p className="text-sm text-gray-400">
           Current bookings: {bookedCount}. Capacity cannot be lower than this value.
         </p>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <FeedbackMessage message={error} variant="error" />}
         <div className="flex gap-3">
           <Link href="/admin/slots" className="flex-1">
             <GhostButton type="button" className="w-full justify-center py-3">

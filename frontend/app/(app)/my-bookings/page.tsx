@@ -8,6 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
@@ -17,6 +18,7 @@ export default function MyBookingsPage() {
   const [loadingId, setLoadingId] = useState<string | null>(null);
   const [loadingBookings, setLoadingBookings] = useState(true);
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     if (!user) return;
@@ -35,12 +37,14 @@ export default function MyBookingsPage() {
   const cancel = async (bookingId: string) => {
     setLoadingId(bookingId);
     setMessage("");
+    setIsError(false);
     try {
       const cancelBooking = httpsCallable(functions, "cancelBooking");
       await cancelBooking({ bookingId });
-      setMessage("Booking cancelled.");
+      setMessage("Your booking was cancelled.");
     } catch (err: unknown) {
       setMessage(getCallableErrorMessage(err, "Could not cancel booking"));
+      setIsError(true);
     } finally {
       setLoadingId(null);
     }
@@ -54,7 +58,9 @@ export default function MyBookingsPage() {
     <div>
       {loadingId && <OverlayLoading label="Cancelling booking..." />}
       <Title heading="My bookings" description="Your reservations update in realtime" />
-      {message && <p className="text-sm text-violet-300 mb-4">{message}</p>}
+      {message && (
+        <FeedbackMessage message={message} variant={isError ? "error" : "success"} />
+      )}
       <div className="space-y-4">
         {bookings.map((b) => (
           <div key={b.id} className="glass-panel rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">

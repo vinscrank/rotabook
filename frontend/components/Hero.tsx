@@ -124,36 +124,36 @@ export default function Hero() {
                                 </div>
                             </motion.div>
 
-                            <div className="mt-4 flex gap-3 items-center justify-start">
-                                {previewCards.map((card, i) => (
-                                    <motion.div
+                            <motion.div
+                                className="mt-4 flex gap-3 items-center justify-start flex-wrap"
+                                initial={{ opacity: 0, y: 12 }}
+                                animate={{ opacity: 1, y: 0 }}
+                                transition={{ duration: 0.45, delay: 0.65 }}
+                            >
+                                {previewCards.map((card) => (
+                                    <div
                                         key={card.label}
-                                        initial={{ y: 20, opacity: 0 }}
-                                        whileInView={{ y: 0, opacity: 1 }}
-                                        viewport={{ once: true }}
-                                        transition={{ type: "spring", stiffness: 250, damping: 70, mass: 1, delay: 0.1 + i * 0.1 }}
-                                        className="w-14 h-10 rounded-lg overflow-hidden border border-white/6 relative"
+                                        className="relative w-24 h-16 shrink-0 rounded-xl overflow-hidden border border-white/15 bg-gray-800 shadow-lg"
                                     >
                                         <img
                                             src={card.image}
                                             alt={card.label}
-                                            className="w-full h-full object-cover"
+                                            className="block w-full h-full object-cover"
+                                            loading="eager"
                                         />
-                                    </motion.div>
+                                        <span className="absolute inset-x-0 bottom-0 bg-black/55 px-2 py-1 text-[10px] font-medium text-white text-center">
+                                            {card.label}
+                                        </span>
+                                    </div>
                                 ))}
-                                <motion.div className="text-sm text-gray-400 ml-2 flex items-center gap-2"
-                                    initial={{ y: 60, opacity: 0 }}
-                                    whileInView={{ y: 0, opacity: 1 }}
-                                    viewport={{ once: true }}
-                                    transition={{ type: "spring", stiffness: 250, damping: 70, mass: 1, delay: 0.2 }}
-                                >
+                                <div className="text-sm text-gray-400 ml-1 flex items-center gap-2">
                                     <div className="relative flex h-3.5 w-3.5 items-center justify-center">
                                         <span className="absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75 animate-ping duration-300" />
                                         <span className="relative inline-flex size-2 rounded-full bg-green-600" />
                                     </div>
                                     Sync active
-                                </motion.div>
-                            </div>
+                                </div>
+                            </motion.div>
                         </motion.div>
                     </div>
                 </div>

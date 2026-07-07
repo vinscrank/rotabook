@@ -9,6 +9,7 @@ import { getCallableErrorMessage } from "@/lib/callableError";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
 import TimePickerField from "@/components/TimePickerField";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 import { formInputClassName } from "@/lib/formStyles";
@@ -110,7 +111,7 @@ export default function NewSlotPage() {
             disabled={loading}
           />
         </FormField>
-        {error && <p className="text-sm text-red-400">{error}</p>}
+        {error && <FeedbackMessage message={error} variant="error" />}
         <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={loading}>
           {loading ? "Creating..." : "Create slot"}
         </PrimaryButton>

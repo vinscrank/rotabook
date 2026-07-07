@@ -7,6 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { AvailabilitySlot } from "@/types";
 import { PrimaryButton } from "@/components/Buttons";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
@@ -41,7 +42,7 @@ export default function BookPage() {
     try {
       const createBooking = httpsCallable(functions, "createBooking");
       await createBooking({ slotId });
-      setMessage("Booking created successfully");
+      setMessage("Your booking was created successfully.");
       setIsError(false);
     } catch (err: unknown) {
       setMessage(getCallableErrorMessage(err, "Booking failed"));
@@ -60,9 +61,7 @@ export default function BookPage() {
       {loadingId && <OverlayLoading label="Booking..." />}
       <Title heading="Available slots" description="Book a slot updated in realtime" />
       {message && (
-        <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>
-          {message}
-        </p>
+        <FeedbackMessage message={message} variant={isError ? "error" : "success"} />
       )}
       <div className="grid gap-4 md:grid-cols-2">
         {slots.map((slot) => (

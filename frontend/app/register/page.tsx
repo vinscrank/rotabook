@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { homeForRole } from "@/lib/roles";
 import { PrimaryButton } from "@/components/Buttons";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import SoftBackdrop from "@/components/SoftBackdrop";
 
@@ -90,7 +91,7 @@ export default function RegisterPage() {
           required
           disabled={isBusy}
         />
-        {displayError && <p className="text-sm text-red-400">{displayError}</p>}
+        {displayError && <FeedbackMessage message={displayError} variant="error" />}
         <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={isBusy}>
           {isBusy ? "Creating account..." : "Register"}
         </PrimaryButton>

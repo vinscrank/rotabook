@@ -7,6 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
+import FeedbackMessage from "@/components/FeedbackMessage";
 import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
@@ -20,6 +21,12 @@ const statusStyles: Record<BookingStatus, string> = {
   confirmed: "bg-violet-500/15 text-violet-300 border-violet-400/30",
   completed: "bg-emerald-500/15 text-emerald-300 border-emerald-400/30",
   cancelled: "bg-red-500/15 text-red-300 border-red-400/30",
+};
+
+const statusLabels: Record<AdminStatus, string> = {
+  confirmed: "Confirmed",
+  completed: "Completed",
+  cancelled: "Cancelled",
 };
 
 export default function AdminBookingsPage() {
@@ -45,7 +52,7 @@ export default function AdminBookingsPage() {
     try {
       const fn = httpsCallable(functions, "updateBookingStatus");
       await fn({ bookingId, status });
-      setMessage(`Booking marked as ${status}.`);
+      setMessage(`Status updated to ${statusLabels[status]}.`);
     } catch (err: unknown) {
       setMessage(getCallableErrorMessage(err, "Could not update booking status"));
       setIsError(true);
@@ -68,7 +75,7 @@ export default function AdminBookingsPage() {
       {loadingAction && <OverlayLoading label="Updating booking..." />}
       <Title heading="All bookings" description="Manage booking statuses" />
       {message && (
-        <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>{message}</p>
+        <FeedbackMessage message={message} variant={isError ? "error" : "success"} />
       )}
       <div className="space-y-4 max-w-3xl mx-auto">
         {bookings.map((b) => (
