@@ -2,6 +2,7 @@ import { onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { createUserProfile } from "./auth/onUserCreated";
 import { createSlot } from "./slots/createSlot";
+import { updateSlot } from "./slots/updateSlot";
 import { createBooking } from "./bookings/createBooking";
 import { cancelBooking } from "./bookings/cancelBooking";
 import { updateBookingStatus } from "./bookings/updateBookingStatus";
@@ -15,6 +16,7 @@ export const health = onRequest({ region: "europe-west1" }, (req, res) => {
 export {
   createUserProfile,
   createSlot,
+  updateSlot,
   createBooking,
   cancelBooking,
   updateBookingStatus,

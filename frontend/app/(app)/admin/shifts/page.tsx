@@ -71,7 +71,7 @@ export default function AdminShiftsPage() {
     <div className="space-y-10">
       <Title heading="Staff shifts" description="Create and view staff rota" />
 
-      <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 max-w-3xl space-y-6">
+      <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 max-w-3xl mx-auto space-y-6">
         <FormField label="Staff member">
           <select
             value={form.staffId}
@@ -134,7 +134,7 @@ export default function AdminShiftsPage() {
         </PrimaryButton>
       </form>
 
-      <div className="space-y-4 max-w-3xl">
+      <div className="space-y-4 max-w-3xl mx-auto">
         {loadingShifts && <InlineLoading label="Loading shifts..." />}
         {shifts.map((shift) => (
           <div key={shift.id} className="glass-panel rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
