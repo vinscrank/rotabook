@@ -11,7 +11,7 @@ import { AvailabilitySlot } from "@/types";
 import { GhostButton, PrimaryButton } from "@/components/Buttons";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
-import LoadingState from "@/components/LoadingState";
+import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
 import { formInputClassName } from "@/lib/formStyles";
@@ -80,6 +80,7 @@ export default function EditSlotPage() {
 
   return (
     <div className="max-w-lg mx-auto">
+      {loading && <OverlayLoading label="Saving changes..." />}
       <Title heading="Edit slot" />
       <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
         <FormField label="Title">

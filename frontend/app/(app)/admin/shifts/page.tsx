@@ -10,6 +10,7 @@ import { getCallableErrorMessage } from "@/lib/callableError";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
 import InlineLoading from "@/components/InlineLoading";
+import { OverlayLoading } from "@/components/LoadingState";
 import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
 import { formInputClassName, formSelectClassName } from "@/lib/formStyles";
@@ -69,6 +70,9 @@ export default function AdminShiftsPage() {
 
   return (
     <div className="space-y-10">
+      {(loading || loadingStaff) && (
+        <OverlayLoading label={loading ? "Creating shift..." : "Loading staff..."} />
+      )}
       <Title heading="Staff shifts" description="Create and view staff rota" />
 
       <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 max-w-3xl mx-auto space-y-6">

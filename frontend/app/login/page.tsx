@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
 import { homeForRole } from "@/lib/roles";
 import { PrimaryButton } from "@/components/Buttons";
+import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import SoftBackdrop from "@/components/SoftBackdrop";
 
 export default function LoginPage() {
@@ -43,8 +44,21 @@ export default function LoginPage() {
   const isBusy = submitting || profileLoading || (Boolean(user) && !profile && !profileError);
   const displayError = error || profileError;
 
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <LoadingState label="Loading..." />
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
+      {isBusy && (
+        <OverlayLoading
+          label={profileLoading ? "Loading profile..." : "Signing in..."}
+        />
+      )}
       <SoftBackdrop />
       <form onSubmit={handleSubmit} className="glass-panel w-full max-w-md rounded-2xl p-8 space-y-4 relative z-10">
         <h1 className="text-2xl font-semibold">Sign in to RotaBook</h1>

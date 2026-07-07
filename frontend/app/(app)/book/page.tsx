@@ -7,7 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { AvailabilitySlot } from "@/types";
 import { PrimaryButton } from "@/components/Buttons";
-import LoadingState from "@/components/LoadingState";
+import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function BookPage() {
@@ -57,6 +57,7 @@ export default function BookPage() {
 
   return (
     <div>
+      {loadingId && <OverlayLoading label="Booking..." />}
       <Title heading="Available slots" description="Book a slot updated in realtime" />
       {message && (
         <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>

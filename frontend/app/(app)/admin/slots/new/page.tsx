@@ -9,6 +9,7 @@ import { getCallableErrorMessage } from "@/lib/callableError";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
 import TimePickerField from "@/components/TimePickerField";
+import { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 import { formInputClassName } from "@/lib/formStyles";
 
@@ -45,6 +46,7 @@ export default function NewSlotPage() {
 
   return (
     <div className="max-w-lg mx-auto">
+      {loading && <OverlayLoading label="Creating slot..." />}
       <Title heading="Create slot" />
       <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
         <FormField label="Title">

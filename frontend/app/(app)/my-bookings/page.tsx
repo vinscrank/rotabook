@@ -8,7 +8,7 @@ import { useAuth } from "@/context/AuthContext";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
-import LoadingState from "@/components/LoadingState";
+import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function MyBookingsPage() {
@@ -52,6 +52,7 @@ export default function MyBookingsPage() {
 
   return (
     <div>
+      {loadingId && <OverlayLoading label="Cancelling booking..." />}
       <Title heading="My bookings" description="Your reservations update in realtime" />
       {message && <p className="text-sm text-violet-300 mb-4">{message}</p>}
       <div className="space-y-4">

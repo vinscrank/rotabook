@@ -7,7 +7,7 @@ import { db, functions } from "@/lib/firebase";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import { Booking } from "@/types";
 import { GhostButton } from "@/components/Buttons";
-import LoadingState from "@/components/LoadingState";
+import LoadingState, { OverlayLoading } from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 type BookingStatus = Booking["status"];
@@ -65,6 +65,7 @@ export default function AdminBookingsPage() {
 
   return (
     <div>
+      {loadingAction && <OverlayLoading label="Updating booking..." />}
       <Title heading="All bookings" description="Manage booking statuses" />
       {message && (
         <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>{message}</p>

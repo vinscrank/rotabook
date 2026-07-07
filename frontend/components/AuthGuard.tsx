@@ -14,11 +14,11 @@ export default function AuthGuard({
   children: React.ReactNode;
   roles?: UserRole[];
 }) {
-  const { user, profile, loading } = useAuth();
+  const { user, profile, loading, profileLoading } = useAuth();
   const router = useRouter();
 
   useEffect(() => {
-    if (loading) return;
+    if (loading || profileLoading) return;
     if (!user) {
       router.replace("/login");
       return;
@@ -27,9 +27,9 @@ export default function AuthGuard({
     if (roles && !roles.includes(profile.role)) {
       router.replace(homeForRole(profile.role));
     }
-  }, [loading, user, profile, roles, router]);
+  }, [loading, profileLoading, user, profile, roles, router]);
 
-  if (loading || !user || !profile) return <LoadingState />;
-  if (roles && !roles.includes(profile.role)) return <LoadingState />;
+  if (loading || profileLoading || !user || !profile) return <LoadingState label="Loading..." />;
+  if (roles && !roles.includes(profile.role)) return <LoadingState label="Loading..." />;
   return <>{children}</>;
 }
