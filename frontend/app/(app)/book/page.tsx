@@ -24,7 +24,11 @@ export default function BookPage() {
       orderBy("date", "asc")
     );
     const unsub = onSnapshot(q, (snap) => {
-      setSlots(snap.docs.map((d) => ({ id: d.id, ...d.data() } as AvailabilitySlot)));
+      setSlots(
+        snap.docs
+          .map((d) => ({ id: d.id, ...d.data() } as AvailabilitySlot))
+          .filter((slot) => slot.date && slot.startTime && slot.endTime && slot.serviceName)
+      );
       setLoadingSlots(false);
     });
     return unsub;
