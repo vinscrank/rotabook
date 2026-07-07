@@ -3,10 +3,12 @@
 import { useEffect, useState } from "react";
 import { collection, onSnapshot } from "firebase/firestore";
 import { db } from "@/lib/firebase";
+import { useAuth } from "@/context/AuthContext";
 import LoadingState from "@/components/LoadingState";
 import Title from "@/components/Title";
 
 export default function AdminDashboardPage() {
+  const { profile } = useAuth();
   const [stats, setStats] = useState({ slots: 0, bookings: 0, users: 0, shifts: 0 });
   const [loaded, setLoaded] = useState({ slots: false, bookings: false, users: false, shifts: false });
 
@@ -47,6 +49,11 @@ export default function AdminDashboardPage() {
 
   return (
     <div>
+      {profile && (
+        <p className="text-center text-sm text-violet-300 mb-6">
+          Signed in as <span className="font-medium text-white">{profile.name}</span>
+        </p>
+      )}
       <Title heading="Admin dashboard" description="Overview of your RotaBook workspace" />
       <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {cards.map((c) => (
