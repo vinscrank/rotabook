@@ -9,6 +9,7 @@ import { PrimaryButton } from "@/components/Buttons";
 import { getCallableErrorMessage } from "@/lib/callableError";
 import DatePickerField from "@/components/DatePickerField";
 import FormField from "@/components/FormField";
+import InlineLoading from "@/components/InlineLoading";
 import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
 import { formInputClassName, formSelectClassName } from "@/lib/formStyles";
@@ -25,20 +26,25 @@ export default function AdminShiftsPage() {
     role: "instructor",
   });
   const [loading, setLoading] = useState(false);
+  const [loadingShifts, setLoadingShifts] = useState(true);
+  const [loadingStaff, setLoadingStaff] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
     const q = query(collection(db, "staff_shifts"), orderBy("date", "asc"));
     const unsub = onSnapshot(q, (snap) => {
       setShifts(snap.docs.map((d) => ({ id: d.id, ...d.data() } as StaffShift)));
+      setLoadingShifts(false);
     });
     return unsub;
   }, []);
 
   useEffect(() => {
-    getDocs(query(collection(db, "users"), where("role", "==", "staff"))).then((snap) => {
-      setStaff(snap.docs.map((d) => d.data() as UserProfile));
-    });
+    getDocs(query(collection(db, "users"), where("role", "==", "staff")))
+      .then((snap) => {
+        setStaff(snap.docs.map((d) => d.data() as UserProfile));
+      })
+      .finally(() => setLoadingStaff(false));
   }, []);
 
   const handleStaffChange = (staffId: string) => {
@@ -71,9 +77,10 @@ export default function AdminShiftsPage() {
             value={form.staffId}
             onChange={(e) => handleStaffChange(e.target.value)}
             className={formSelectClassName}
+            disabled={loadingStaff || loading}
             required
           >
-            <option value="">Select staff member</option>
+            <option value="">{loadingStaff ? "Loading staff..." : "Select staff member"}</option>
             {staff.map((s) => (
               <option key={s.id} value={s.id}>{s.name}</option>
             ))}
@@ -88,6 +95,7 @@ export default function AdminShiftsPage() {
               placeholder="Select date"
               required
               minDate={new Date()}
+              disabled={loading}
             />
           </FormField>
           <FormField label="Role">
@@ -97,6 +105,7 @@ export default function AdminShiftsPage() {
               onChange={(e) => setForm({ ...form, role: e.target.value })}
               className={formInputClassName}
               required
+              disabled={loading}
             />
           </FormField>
           <FormField label="Start time">
@@ -105,6 +114,7 @@ export default function AdminShiftsPage() {
               onChange={(startTime) => setForm({ ...form, startTime })}
               placeholder="Select start time"
               required
+              disabled={loading}
             />
           </FormField>
           <FormField label="End time">
@@ -113,6 +123,7 @@ export default function AdminShiftsPage() {
               onChange={(endTime) => setForm({ ...form, endTime })}
               placeholder="Select end time"
               required
+              disabled={loading}
             />
           </FormField>
         </div>
@@ -124,6 +135,7 @@ export default function AdminShiftsPage() {
       </form>
 
       <div className="space-y-4 max-w-3xl">
+        {loadingShifts && <InlineLoading label="Loading shifts..." />}
         {shifts.map((shift) => (
           <div key={shift.id} className="glass-panel rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
             <div>
@@ -133,6 +145,7 @@ export default function AdminShiftsPage() {
             <p className="text-sm text-violet-300">{shift.date} · {shift.startTime} - {shift.endTime}</p>
           </div>
         ))}
+        {!loadingShifts && !shifts.length && <p className="text-gray-400 text-sm">No shifts created yet.</p>}
       </div>
     </div>
   );

@@ -3,7 +3,7 @@ import * as logger from "firebase-functions/logger";
 import { FieldValue } from "firebase-admin/firestore";
 import { admin } from "../admin";
 import { getUserProfile } from "../utils/auth";
-import { assertString } from "../utils/validators";
+import { assertDateString, assertString, assertTimeString } from "../utils/validators";
 
 export const createBooking = onCall({ region: "europe-west1" }, async (request) => {
   const uid = request.auth?.uid;
@@ -35,11 +35,17 @@ export const createBooking = onCall({ region: "europe-west1" }, async (request) 
 
       const slot = slotSnap.data()!;
 
+      const serviceName = assertString(slot.serviceName, "serviceName");
+      const date = assertDateString(slot.date, "date");
+      const startTime = assertTimeString(slot.startTime, "startTime");
+      const endTime = assertTimeString(slot.endTime, "endTime");
+      const bookedCount = Number.isInteger(slot.bookedCount) ? slot.bookedCount : 0;
+
       if (slot.status !== "available") {
         throw new HttpsError("failed-precondition", "Slot not available");
       }
 
-      if (slot.bookedCount >= slot.capacity) {
+      if (bookedCount >= slot.capacity) {
         throw new HttpsError("failed-precondition", "Slot is full");
       }
 
@@ -53,7 +59,7 @@ export const createBooking = onCall({ region: "europe-west1" }, async (request) 
         throw new HttpsError("already-exists", "Booking already exists for this slot");
       }
 
-      const newBookedCount = slot.bookedCount + 1;
+      const newBookedCount = bookedCount + 1;
       const newStatus = newBookedCount >= slot.capacity ? "full" : "available";
 
       tx.set(bookingRef, {
@@ -61,10 +67,10 @@ export const createBooking = onCall({ region: "europe-west1" }, async (request) 
         userName: user.name,
         slotId,
         staffId: null,
-        serviceName: slot.serviceName,
-        date: slot.date,
-        startTime: slot.startTime,
-        endTime: slot.endTime,
+        serviceName,
+        date,
+        startTime,
+        endTime,
         status: "pending",
         createdAt: FieldValue.serverTimestamp(),
         updatedAt: FieldValue.serverTimestamp(),

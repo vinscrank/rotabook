@@ -5,11 +5,13 @@ import { collection, onSnapshot, orderBy, query, where } from "firebase/firestor
 import { db } from "@/lib/firebase";
 import { useAuth } from "@/context/AuthContext";
 import { StaffShift } from "@/types";
+import InlineLoading from "@/components/InlineLoading";
 import Title from "@/components/Title";
 
 export default function StaffSchedulePage() {
   const { user } = useAuth();
   const [shifts, setShifts] = useState<StaffShift[]>([]);
+  const [loadingShifts, setLoadingShifts] = useState(true);
 
   useEffect(() => {
     if (!user) return;
@@ -20,6 +22,7 @@ export default function StaffSchedulePage() {
     );
     const unsub = onSnapshot(q, (snap) => {
       setShifts(snap.docs.map((d) => ({ id: d.id, ...d.data() } as StaffShift)));
+      setLoadingShifts(false);
     });
     return unsub;
   }, [user]);
@@ -27,6 +30,7 @@ export default function StaffSchedulePage() {
   return (
     <div>
       <Title heading="My schedule" description="Your upcoming shifts" />
+      {loadingShifts && <InlineLoading label="Loading your schedule..." />}
       <div className="space-y-4">
         {shifts.map((shift) => (
           <div key={shift.id} className="glass-panel rounded-2xl p-5">
@@ -34,7 +38,7 @@ export default function StaffSchedulePage() {
             <p className="text-sm mt-2">{shift.date} · {shift.startTime} - {shift.endTime}</p>
           </div>
         ))}
-        {!shifts.length && <p className="text-gray-400 text-sm">No shifts assigned.</p>}
+        {!loadingShifts && !shifts.length && <p className="text-gray-400 text-sm">No shifts assigned.</p>}
       </div>
     </div>
   );

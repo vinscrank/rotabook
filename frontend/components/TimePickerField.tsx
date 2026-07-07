@@ -10,6 +10,7 @@ interface TimePickerFieldProps {
   onChange: (value: string) => void;
   placeholder?: string;
   required?: boolean;
+  disabled?: boolean;
 }
 
 export default function TimePickerField({
@@ -17,6 +18,7 @@ export default function TimePickerField({
   onChange,
   placeholder = "Select time",
   required,
+  disabled,
 }: TimePickerFieldProps) {
   return (
     <div className="relative w-full min-w-0">
@@ -30,6 +32,7 @@ export default function TimePickerField({
         dateFormat="HH:mm"
         placeholderText={placeholder}
         required={required}
+        disabled={disabled}
         className={formInputClassName}
         wrapperClassName="w-full"
         calendarClassName="rotabook-datepicker rotabook-timepicker"

@@ -6,15 +6,18 @@ import { collection, onSnapshot, orderBy, query } from "firebase/firestore";
 import { db } from "@/lib/firebase";
 import { AvailabilitySlot } from "@/types";
 import { PrimaryButton } from "@/components/Buttons";
+import InlineLoading from "@/components/InlineLoading";
 import Title from "@/components/Title";
 
 export default function AdminSlotsPage() {
   const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(true);
 
   useEffect(() => {
     const q = query(collection(db, "availability_slots"), orderBy("date", "asc"));
     const unsub = onSnapshot(q, (snap) => {
       setSlots(snap.docs.map((d) => ({ id: d.id, ...d.data() } as AvailabilitySlot)));
+      setLoadingSlots(false);
     });
     return unsub;
   }, []);
@@ -27,6 +30,7 @@ export default function AdminSlotsPage() {
           <PrimaryButton>New slot</PrimaryButton>
         </Link>
       </div>
+      {loadingSlots && <InlineLoading label="Loading slots..." />}
       <div className="space-y-4">
         {slots.map((slot) => (
           <div key={slot.id} className="glass-panel rounded-2xl p-5">
@@ -38,6 +42,7 @@ export default function AdminSlotsPage() {
             </p>
           </div>
         ))}
+        {!loadingSlots && !slots.length && <p className="text-gray-400 text-sm">No slots created yet.</p>}
       </div>
     </div>
   );

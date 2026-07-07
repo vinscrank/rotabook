@@ -54,6 +54,7 @@ export default function NewSlotPage() {
             onChange={(e) => setForm({ ...form, title: e.target.value })}
             className={formInputClassName}
             required
+            disabled={loading}
           />
         </FormField>
         <FormField label="Service name">
@@ -63,6 +64,7 @@ export default function NewSlotPage() {
             onChange={(e) => setForm({ ...form, serviceName: e.target.value })}
             className={formInputClassName}
             required
+            disabled={loading}
           />
         </FormField>
         <FormField label="Date">
@@ -72,6 +74,7 @@ export default function NewSlotPage() {
             placeholder="Select date"
             required
             minDate={new Date()}
+            disabled={loading}
           />
         </FormField>
         <div className="grid gap-6 sm:grid-cols-2">
@@ -81,6 +84,7 @@ export default function NewSlotPage() {
               onChange={(startTime) => setForm({ ...form, startTime })}
               placeholder="Select start time"
               required
+              disabled={loading}
             />
           </FormField>
           <FormField label="End time">
@@ -89,6 +93,7 @@ export default function NewSlotPage() {
               onChange={(endTime) => setForm({ ...form, endTime })}
               placeholder="Select end time"
               required
+              disabled={loading}
             />
           </FormField>
         </div>
@@ -100,6 +105,7 @@ export default function NewSlotPage() {
             onChange={(e) => setForm({ ...form, capacity: e.target.value })}
             className={formInputClassName}
             required
+            disabled={loading}
           />
         </FormField>
         {error && <p className="text-sm text-red-400">{error}</p>}

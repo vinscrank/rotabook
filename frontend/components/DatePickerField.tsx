@@ -11,6 +11,7 @@ interface DatePickerFieldProps {
   placeholder?: string;
   required?: boolean;
   minDate?: Date;
+  disabled?: boolean;
 }
 
 export default function DatePickerField({
@@ -19,6 +20,7 @@ export default function DatePickerField({
   placeholder = "Select date",
   required,
   minDate,
+  disabled,
 }: DatePickerFieldProps) {
   return (
     <div className="relative w-full min-w-0">
@@ -29,6 +31,7 @@ export default function DatePickerField({
         placeholderText={placeholder}
         required={required}
         minDate={minDate}
+        disabled={disabled}
         className={formInputClassName}
         wrapperClassName="w-full"
         calendarClassName="rotabook-datepicker"
