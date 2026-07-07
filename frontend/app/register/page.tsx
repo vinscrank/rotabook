@@ -9,32 +9,40 @@ import { PrimaryButton } from "@/components/Buttons";
 import SoftBackdrop from "@/components/SoftBackdrop";
 
 export default function RegisterPage() {
-  const { signUp, user, profile, loading: authLoading } = useAuth();
+  const { signUp, user, profile, loading: authLoading, profileLoading, profileError } = useAuth();
   const router = useRouter();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user && profile) {
+    if (!authLoading && !profileLoading && user && profile) {
       router.replace(homeForRole(profile.role));
     }
-  }, [authLoading, user, profile, router]);
+  }, [authLoading, profileLoading, user, profile, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSubmitting(true);
     try {
       await signUp(name, email, password);
     } catch {
       setError("Registration failed");
-    } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (submitting && user && !profileLoading && !profile && profileError) {
+      setSubmitting(false);
+    }
+  }, [submitting, user, profileLoading, profile, profileError]);
+
+  const isBusy = submitting || profileLoading || (Boolean(user) && !profile && !profileError);
+  const displayError = error || profileError;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -48,6 +56,7 @@ export default function RegisterPage() {
           onChange={(e) => setName(e.target.value)}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
           required
+          disabled={isBusy}
         />
         <input
           type="email"
@@ -56,6 +65,7 @@ export default function RegisterPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
           required
+          disabled={isBusy}
         />
         <input
           type="password"
@@ -64,10 +74,11 @@ export default function RegisterPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
           required
+          disabled={isBusy}
         />
-        {error && <p className="text-sm text-red-400">{error}</p>}
-        <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={loading}>
-          {loading ? "Creating..." : "Register"}
+        {displayError && <p className="text-sm text-red-400">{displayError}</p>}
+        <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={isBusy}>
+          {isBusy ? "Creating account..." : "Register"}
         </PrimaryButton>
         <p className="text-sm text-gray-400 text-center">
           Already have an account? <Link href="/login" className="text-violet-400">Sign in</Link>

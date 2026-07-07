@@ -4,14 +4,18 @@ import { useEffect, useState } from "react";
 import { collection, onSnapshot, orderBy, query, where } from "firebase/firestore";
 import { httpsCallable } from "firebase/functions";
 import { db, functions } from "@/lib/firebase";
+import { getCallableErrorMessage } from "@/lib/callableError";
 import { AvailabilitySlot } from "@/types";
 import { PrimaryButton } from "@/components/Buttons";
+import InlineLoading from "@/components/InlineLoading";
 import Title from "@/components/Title";
 
 export default function BookPage() {
   const [slots, setSlots] = useState<AvailabilitySlot[]>([]);
   const [loadingId, setLoadingId] = useState<string | null>(null);
+  const [loadingSlots, setLoadingSlots] = useState(true);
   const [message, setMessage] = useState("");
+  const [isError, setIsError] = useState(false);
 
   useEffect(() => {
     const q = query(
@@ -21,6 +25,7 @@ export default function BookPage() {
     );
     const unsub = onSnapshot(q, (snap) => {
       setSlots(snap.docs.map((d) => ({ id: d.id, ...d.data() } as AvailabilitySlot)));
+      setLoadingSlots(false);
     });
     return unsub;
   }, []);
@@ -28,13 +33,15 @@ export default function BookPage() {
   const bookSlot = async (slotId: string) => {
     setLoadingId(slotId);
     setMessage("");
+    setIsError(false);
     try {
       const createBooking = httpsCallable(functions, "createBooking");
       await createBooking({ slotId });
       setMessage("Booking created successfully");
+      setIsError(false);
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      setMessage(e.message || "Booking failed");
+      setMessage(getCallableErrorMessage(err, "Booking failed"));
+      setIsError(true);
     } finally {
       setLoadingId(null);
     }
@@ -43,7 +50,12 @@ export default function BookPage() {
   return (
     <div>
       <Title heading="Available slots" description="Book a slot updated in realtime" />
-      {message && <p className="text-sm text-violet-300 mb-4">{message}</p>}
+      {message && (
+        <p className={`text-sm mb-4 ${isError ? "text-red-400" : "text-violet-300"}`}>
+          {message}
+        </p>
+      )}
+      {loadingSlots && <InlineLoading label="Loading available slots..." />}
       <div className="grid gap-4 md:grid-cols-2">
         {slots.map((slot) => (
           <div key={slot.id} className="glass-panel rounded-2xl p-5">
@@ -62,7 +74,7 @@ export default function BookPage() {
             </PrimaryButton>
           </div>
         ))}
-        {!slots.length && (
+        {!loadingSlots && !slots.length && (
           <p className="text-gray-400 text-sm">No available slots right now.</p>
         )}
       </div>

@@ -5,7 +5,12 @@ import { useRouter } from "next/navigation";
 import { httpsCallable } from "firebase/functions";
 import { functions } from "@/lib/firebase";
 import { PrimaryButton } from "@/components/Buttons";
+import { getCallableErrorMessage } from "@/lib/callableError";
+import DatePickerField from "@/components/DatePickerField";
+import FormField from "@/components/FormField";
+import TimePickerField from "@/components/TimePickerField";
 import Title from "@/components/Title";
+import { formInputClassName } from "@/lib/formStyles";
 
 export default function NewSlotPage() {
   const router = useRouter();
@@ -32,34 +37,71 @@ export default function NewSlotPage() {
       });
       router.push("/admin/slots");
     } catch (err: unknown) {
-      const e = err as { message?: string };
-      setError(e.message || "Failed to create slot");
+      setError(getCallableErrorMessage(err, "Failed to create slot"));
     } finally {
       setLoading(false);
     }
   };
 
-  const field = (key: keyof typeof form, label: string, type = "text") => (
-    <input
-      type={type}
-      placeholder={label}
-      value={form[key]}
-      onChange={(ev) => setForm({ ...form, [key]: ev.target.value })}
-      className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
-      required
-    />
-  );
-
   return (
     <div className="max-w-lg">
       <Title heading="Create slot" />
-      <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 space-y-4">
-        {field("title", "Title")}
-        {field("serviceName", "Service name")}
-        {field("date", "Date (YYYY-MM-DD")}
-        {field("startTime", "Start (HH:mm)")}
-        {field("endTime", "End (HH:mm)")}
-        {field("capacity", "Capacity", "number")}
+      <form onSubmit={handleSubmit} className="glass-panel rounded-2xl p-6 md:p-8 space-y-6">
+        <FormField label="Title">
+          <input
+            placeholder="Morning session"
+            value={form.title}
+            onChange={(e) => setForm({ ...form, title: e.target.value })}
+            className={formInputClassName}
+            required
+          />
+        </FormField>
+        <FormField label="Service name">
+          <input
+            placeholder="Personal training"
+            value={form.serviceName}
+            onChange={(e) => setForm({ ...form, serviceName: e.target.value })}
+            className={formInputClassName}
+            required
+          />
+        </FormField>
+        <FormField label="Date">
+          <DatePickerField
+            value={form.date}
+            onChange={(date) => setForm({ ...form, date })}
+            placeholder="Select date"
+            required
+            minDate={new Date()}
+          />
+        </FormField>
+        <div className="grid gap-6 sm:grid-cols-2">
+          <FormField label="Start time">
+            <TimePickerField
+              value={form.startTime}
+              onChange={(startTime) => setForm({ ...form, startTime })}
+              placeholder="Select start time"
+              required
+            />
+          </FormField>
+          <FormField label="End time">
+            <TimePickerField
+              value={form.endTime}
+              onChange={(endTime) => setForm({ ...form, endTime })}
+              placeholder="Select end time"
+              required
+            />
+          </FormField>
+        </div>
+        <FormField label="Capacity">
+          <input
+            type="number"
+            placeholder="10"
+            value={form.capacity}
+            onChange={(e) => setForm({ ...form, capacity: e.target.value })}
+            className={formInputClassName}
+            required
+          />
+        </FormField>
         {error && <p className="text-sm text-red-400">{error}</p>}
         <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={loading}>
           {loading ? "Creating..." : "Create slot"}

@@ -9,31 +9,39 @@ import { PrimaryButton } from "@/components/Buttons";
 import SoftBackdrop from "@/components/SoftBackdrop";
 
 export default function LoginPage() {
-  const { signIn, user, profile, loading: authLoading } = useAuth();
+  const { signIn, user, profile, loading: authLoading, profileLoading, profileError } = useAuth();
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
 
   useEffect(() => {
-    if (!authLoading && user && profile) {
+    if (!authLoading && !profileLoading && user && profile) {
       router.replace(homeForRole(profile.role));
     }
-  }, [authLoading, user, profile, router]);
+  }, [authLoading, profileLoading, user, profile, router]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-    setLoading(true);
+    setSubmitting(true);
     try {
       await signIn(email, password);
     } catch {
       setError("Invalid email or password");
-    } finally {
-      setLoading(false);
+      setSubmitting(false);
     }
   };
+
+  useEffect(() => {
+    if (submitting && user && !profileLoading && !profile && profileError) {
+      setSubmitting(false);
+    }
+  }, [submitting, user, profileLoading, profile, profileError]);
+
+  const isBusy = submitting || profileLoading || (Boolean(user) && !profile && !profileError);
+  const displayError = error || profileError;
 
   return (
     <div className="min-h-screen flex items-center justify-center px-4">
@@ -47,6 +55,7 @@ export default function LoginPage() {
           onChange={(e) => setEmail(e.target.value)}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
           required
+          disabled={isBusy}
         />
         <input
           type="password"
@@ -55,10 +64,11 @@ export default function LoginPage() {
           onChange={(e) => setPassword(e.target.value)}
           className="w-full rounded-xl bg-white/5 border border-white/10 px-4 py-3 text-sm"
           required
+          disabled={isBusy}
         />
-        {error && <p className="text-sm text-red-400">{error}</p>}
-        <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={loading}>
-          {loading ? "Signing in..." : "Sign in"}
+        {displayError && <p className="text-sm text-red-400">{displayError}</p>}
+        <PrimaryButton type="submit" className="w-full justify-center py-3" disabled={isBusy}>
+          {isBusy ? "Signing in..." : "Sign in"}
         </PrimaryButton>
         <p className="text-sm text-gray-400 text-center">
           No account? <Link href="/register" className="text-violet-400">Register</Link>
